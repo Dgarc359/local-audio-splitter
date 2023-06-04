@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 
@@ -56,3 +56,8 @@ app.whenReady().then(() => {
     }
   });
 });
+
+ipcMain.on('convert', (event, arg) => { 
+  console.log('ipcMain: Got convert event');
+  event.sender.send('convert-reply', 'finished converting');
+})
