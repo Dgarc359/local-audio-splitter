@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
+import * as fs from 'node:fs';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 
 function createWindow() {
@@ -57,7 +58,12 @@ app.whenReady().then(() => {
   });
 });
 
-ipcMain.on('convert', (event, arg) => { 
-  console.log('ipcMain: Got convert event');
+ipcMain.on('convert', async (event, arg: any) => { 
+  // console.log('ipcMain: Got convert event', arg);
+  // convert arg, which is a base64 string, to a File object
+  // const file = new File([arg], 'input.mp3', { type: 'audio/mp3' });
+  // const file = readFileSync(arg);
+  // console.log(file)
+  fs.writeFileSync(path.join(__dirname, '../../test-out/test.mp3'), Buffer.from(arg, 'base64'));
   event.sender.send('convert-reply', 'finished converting');
 })

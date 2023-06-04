@@ -77,9 +77,21 @@ export const UploadFile = () => {
 
 
               const blob = new Blob([unsplitFileState], { type: "audio/mpeg" });
+              console.log("blob", structuredClone(blob));
+              
+              // encode unsplitFileState to base64
+              const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                  resolve(reader.result);
+                };
+                reader.onerror = reject;
+              }).then(res => res);
+
               const postMessagePayload: MessageEventPayload = {
                 type: 'convert',
-                payload: unsplitFileState
+                payload: base64 as string
               }
               window.postMessage(postMessagePayload)
               // console.log(blob);
