@@ -79,7 +79,7 @@ export const UploadFile = () => {
               const blob = new Blob([unsplitFileState], { type: "audio/mpeg" });
               console.log("blob", structuredClone(blob));
               
-              // encode unsplitFileState to base64
+              // encode blob to base64
               const base64 = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(blob);
@@ -96,13 +96,13 @@ export const UploadFile = () => {
               window.postMessage(postMessagePayload)
               // console.log(blob);
               // download blob to local machine
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.setAttribute("download", filenameState);
-              a.click();
-              a.parentNode?.removeChild(a);
-              setFileNameState(null);
+              // const url = window.URL.createObjectURL(blob);
+              // const a = document.createElement("a");
+              // a.href = url;
+              // a.setAttribute("download", filenameState);
+              // a.click();
+              // a.parentNode?.removeChild(a);
+              // setFileNameState(null);
             }
           } else {
             // alert user to upload file

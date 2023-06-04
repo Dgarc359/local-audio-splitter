@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import * as path from 'path';
+import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { execSync } from 'node:child_process'
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 
 function createWindow() {
@@ -64,6 +65,10 @@ ipcMain.on('convert', async (event, arg: any) => {
   // const file = new File([arg], 'input.mp3', { type: 'audio/mp3' });
   // const file = readFileSync(arg);
   // console.log(file)
-  fs.writeFileSync(path.join(__dirname, '../../test-out/test.mp3'), Buffer.from(arg, 'base64'));
+  // console.log('temp dir',);
+  const filePath = path.join( app.getPath('temp'), 'test.mp3');
+  fs.writeFileSync(filePath, Buffer.from(arg, 'base64'));
+  console.log("calling demucs")
+  execSync(`demucs --two-stems=vocals ${filePath}`)
   event.sender.send('convert-reply', 'finished converting');
 })
