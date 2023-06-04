@@ -2,8 +2,8 @@ import React from "react";
 import { convertFile } from "../util/convert-file";
 // import process for web worker
 // import process from 'process'
-// import path from "path";
-import {join} from 'path-browserify'
+// import path from "node:path";
+// import {join} from 'path-browserify'
 // @ts-ignore
 
 export const UploadFile = () => {
@@ -72,7 +72,8 @@ export const UploadFile = () => {
               //   throw new Error('Load native module is not safe')
               // }
               // const worker = new Worker(Path.join(__dirname, 'src/util/script.js'))
-              const worker = new Worker(join(__dirname, 'src/util/script.js'))
+              // const worker = new Worker(join(__dirname, 'src/util/script.js'))
+              // console.log(path.join(__dirname, 'src/util/script.js'))
 
               const blob = new Blob([fileState], { type: "audio/mpeg" });
               // console.log(blob);
