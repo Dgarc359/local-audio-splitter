@@ -1,11 +1,6 @@
 import React from "react";
-import { convertFile } from "../util/convert-file";
-import {MessageEventPayload} from '../../util';
-// import process for web worker
-// import process from 'process'
-// import path from "path";
-import {join} from 'path-browserify'
-// @ts-ignore
+import {ConvertMessageEventPayload, MessageEventPayload} from '../../util';
+import { TempDirectoryList } from "./temp-directory-list";
 
 export const UploadFile = () => {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
@@ -67,15 +62,6 @@ export const UploadFile = () => {
             alert("File is being converted");
             // convert fileState to blob if not null
             if (unsplitFileState) {
-              
-              // await execSync('demucs')
-              // convertFile();
-              // process.dlopen = () => {
-              //   throw new Error('Load native module is not safe')
-              // }
-              // const worker = new Worker(Path.join(__dirname, 'src/util/script.js'))
-
-
               const blob = new Blob([unsplitFileState], { type: "audio/mpeg" });
               console.log("blob", structuredClone(blob));
               
@@ -91,18 +77,10 @@ export const UploadFile = () => {
 
               const postMessagePayload: MessageEventPayload = {
                 type: 'convert',
-                payload: base64 as string
+                base64File: base64 as string,
+                fileName: String(unsplitFileState.name)
               }
               window.postMessage(postMessagePayload)
-              // console.log(blob);
-              // download blob to local machine
-              // const url = window.URL.createObjectURL(blob);
-              // const a = document.createElement("a");
-              // a.href = url;
-              // a.setAttribute("download", filenameState);
-              // a.click();
-              // a.parentNode?.removeChild(a);
-              // setFileNameState(null);
             }
           } else {
             // alert user to upload file
@@ -113,7 +91,7 @@ export const UploadFile = () => {
         Convert
       </button>}
 
-      
+      { unsplitFileState && <TempDirectoryList />}
     </div>
   );
 };

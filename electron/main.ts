@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { execSync } from 'node:child_process'
+import { exec, execSync } from 'node:child_process'
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 
 function createWindow() {
@@ -59,16 +59,37 @@ app.whenReady().then(() => {
   });
 });
 
-ipcMain.on('convert', async (event, arg: any) => { 
+ipcMain.on('convert', async (event, base64File: string, fileName: string) => { 
   // console.log('ipcMain: Got convert event', arg);
   // convert arg, which is a base64 string, to a File object
   // const file = new File([arg], 'input.mp3', { type: 'audio/mp3' });
   // const file = readFileSync(arg);
   // console.log(file)
   // console.log('temp dir',);
-  const filePath = path.join( app.getPath('temp'), 'test.mp3');
-  fs.writeFileSync(filePath, Buffer.from(arg, 'base64'));
+  console.log("filename", fileName)
+  const filePath = path.join(app.getPath('temp'), fileName);
+  fs.writeFileSync(filePath, Buffer.from(base64File, 'base64'));
+  const outDir = path.join(app.getPath('temp'), "demucs");
+  console.log('tmp path', app.getPath("temp"))
+  fs.mkdir(path.join(app.getPath('temp'), "demucs"), (err) => { 
+    if (err) {
+      // return console.error(err);
+      // if error is EEXIST do not throw error
+      if (err.code !== 'EEXIST') throw err;
+
+    }
+    console.log('Directory created successfully!');
+  });
+
   console.log("calling demucs")
-  execSync(`demucs --two-stems=vocals ${filePath}`)
-  event.sender.send('convert-reply', 'finished converting');
+  const demucsRes = exec(`demucs --two-stems=vocals ${filePath} --out ${outDir}`);
+
+  event.sender.send('convert-reply', "fsuif");
 })
+
+ipcMain.on("read-temp-dir", (event) => {
+  console.log("temp path", app.getPath('temp'))
+  const outDir = path.join(app.getPath('temp'), "demucs");
+  console.log("reading temp dir", fs.readdirSync(outDir));
+  event.sender.send('read-temp-dir-reply', fs.readdirSync(outDir))
+});
